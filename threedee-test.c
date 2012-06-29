@@ -1,10 +1,7 @@
 #include <stdio.h>
 
-#include <threedee/types.h>
-#include <threedee/vector.h>
-#include <threedee/matrix.h>
-#include <threedee/rotation.h>
-#include <threedee/projection.h>
+#include <threedee/threedee.h>
+
 
 void printv(vec4 vec)
 {
@@ -31,6 +28,31 @@ void printm(mat4 mat)
 int main(int argc, char *argv[])
 {
     (void)argc; (void)argv;
+#ifdef __SSE__
+    printf("SSE ");
+#endif
+#ifdef __SSE2__
+    printf("SSE2 ");
+#endif
+#ifdef __SSE3__
+    printf("SSE3 ");
+#endif
+#ifdef __SSE4__
+    printf("SSE4 ");
+#endif
+#ifdef __SSE4_1__
+    printf("SSE4.1 ");
+#endif
+#ifdef __SSE4_2__
+    printf("SSE4.2 ");
+#endif
+#ifdef __AVX__
+    printf("AVX ");
+#endif
+#ifdef __FMA4__
+    printf("FMA4 ");
+#endif
+    printf("\n");
 
     printv(vec(1, 2, 3, 4));
     printv(vzero());
@@ -39,6 +61,15 @@ int main(int argc, char *argv[])
     printm(midentity());
 
     vec4 a = { 1, 2, 3, 4 }, b = { 5, 6, 7, 8 };
+
+
+    printf("\ncross products:\n");
+
+    printv(vdot(a, b));
+    printv(vdot(b, a));
+
+    printv(vdot3(a, b));
+    printv(vdot3(b, a));
 
     //vec4 blendmask = { 1, -1, 1, -1 };
     //printv(vblend(x, y, blendmask));
@@ -95,6 +126,12 @@ int main(int argc, char *argv[])
     printf("\northogonal matrix:\n");
     printm(mat_ortho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0));
     printm(mat_ortho(-1.0, 2.0, -1.0, 2.0, -1.0, 2.0));
+
+    printf("\ntranslate matrix:\n");
+    printm(mtranslate(a));
+
+    printf("\nscale matrix:\n");
+    printm(mscale(a));
 
     return 0;
 }

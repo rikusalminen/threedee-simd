@@ -35,6 +35,14 @@ static inline vec4 ssqrt(vec4 x) { return _mm_sqrt_ss(x); }
 static inline vec4 srcp(vec4 x) { return _mm_rcp_ss(x); }
 static inline vec4 srsqrt(vec4 x) { return _mm_rsqrt_ss(x); }
 
+static inline vec4 vload(const vec4 *ptr) { return _mm_load_ps((float*)ptr); }
+static inline vec4 vloadu(const float *ptr) { return _mm_loadu_ps((float*)ptr); }
+
+static inline void vstore(vec4 *ptr, vec4 v) { _mm_store_ps((float*)ptr, v); }
+static inline void vstoreu(float *ptr, vec4 v) { _mm_storeu_ps(ptr, v); }
+
+static inline void vstream(vec4 *ptr, vec4 v) { _mm_stream_ps((float*)ptr, v); }
+
 #define vshuffle_mask(a, b, c, d) (((a) << 0) | ((b) << 2) | ((c) << 4) | ((d) << 6))
 #define vshuffle(x, y, a, b, c, d) (__builtin_ia32_shufps((x), (y), vshuffle_mask((a),(b),(c),(d))))
 #define vsplat(v, x) vshuffle((v), (v), (x), (x),  (x),  (x))
@@ -105,8 +113,8 @@ static inline vec4 vdot3(vec4 x, vec4 y)
 
 #else
 
-static inline vec4 vblend(vec4 a, vec4 b, vec4 mask);
-static inline vec4 vblend_mask(vec4 a, vec4 b, const int mask);
+// static inline vec4 vblend(vec4 a, vec4 b, vec4 mask);
+// static inline vec4 vblend_mask(vec4 a, vec4 b, const int mask);
 
 #ifdef __SSE3__
 

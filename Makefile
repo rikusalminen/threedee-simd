@@ -1,4 +1,5 @@
-CFLAGS=-std=gnu99 -Iinclude/ -O3 -msse2 -msse3 #-msse4 -msse4.1 -msse4.2 -msse4a -msse2avx -mavx -mfma4
+CFLAGS=-std=gnu99 -Iinclude/ -W -Wall -Wextra -pedantic -O3 -march=native
+#CFLAGS+=-msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2 -msse4a -msse2avx -mavx -mfma4
 LIBS=-lm
 CC=gcc
 SRCS=$(wildcard *.c)

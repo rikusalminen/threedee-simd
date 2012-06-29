@@ -4,9 +4,57 @@
 #include <threedee/types.h>
 #include <threedee/vector.h>
 
+static inline mat4 mtranspose(mat4 m)
+{
+    _MM_TRANSPOSE4_PS(m.rows[0], m.rows[1], m.rows[2], m.rows[3]);
+    return m;
+}
+
+static inline mat4 mload(const mat4 *ptr)
+{
+    mat4 m = {{ vload((vec4*)ptr+0), vload((vec4*)ptr+1), vload((vec4*)ptr+2), vload((vec4*)ptr+3) }};
+    return m;
+}
+
+static inline mat4 mloadu(const float *ptr)
+{
+    mat4 m = {{ vloadu((float*)ptr+0), vloadu((float*)ptr+4), vloadu((float*)ptr+8), vloadu((float*)ptr+12) }};
+    return m;
+}
+
+static inline void mstore(mat4 *ptr, mat4 mat)
+{
+    vstore((vec4*)ptr + 0, mat.rows[0]);
+    vstore((vec4*)ptr + 1, mat.rows[1]);
+    vstore((vec4*)ptr + 2, mat.rows[2]);
+    vstore((vec4*)ptr + 3, mat.rows[3]);
+}
+
+static inline void mstoreu(float *ptr, mat4 mat)
+{
+    vstoreu(ptr + 0, mat.rows[0]);
+    vstoreu(ptr + 4, mat.rows[1]);
+    vstoreu(ptr + 8, mat.rows[2]);
+    vstoreu(ptr + 12, mat.rows[3]);
+}
+
+static inline void mstream(mat4 *ptr, mat4 mat)
+{
+    vstream((vec4*)ptr + 0, mat.rows[0]);
+    vstream((vec4*)ptr + 1, mat.rows[1]);
+    vstream((vec4*)ptr + 2, mat.rows[2]);
+    vstream((vec4*)ptr + 3, mat.rows[3]);
+}
+
+static inline mat4 mloadt(const mat4 *ptr) { return mtranspose(mload(ptr)); }
+static inline mat4 mloadut(const float *ptr) { return mtranspose(mloadu(ptr)); }
+static inline void mstoret(mat4 *ptr, mat4 mat) { mstore(ptr, mtranspose(mat)); }
+static inline void mstoreut(float *ptr, mat4 mat) { mstoreu(ptr, mtranspose(mat)); }
+static inline void mstreamt(mat4 *ptr, mat4 mat) { mstream(ptr, mtranspose(mat)); }
+
 static inline mat4 smmul(scalar s, mat4 m)
 {
-    mat4 result = { vscalar(s) * m.rows[0], vscalar(s) * m.rows[1], vscalar(s) * m.rows[2], vscalar(s) * m.rows[3] };
+    mat4 result = {{ vscalar(s) * m.rows[0], vscalar(s) * m.rows[1], vscalar(s) * m.rows[2], vscalar(s) * m.rows[3] }};
     return result;
 }
 
@@ -207,14 +255,8 @@ static inline mat4 minverse_transpose_rows(vec4 row0, vec4 row1, vec4 row2, vec4
     minor2 = det * minor2;
     minor3 = det * minor3;
 
-    mat4 result = { minor0, minor1, minor2, minor3 };
+    mat4 result = { { minor0, minor1, minor2, minor3 } };
     return result;
-}
-
-static inline mat4 mtranspose(mat4 m)
-{
-    _MM_TRANSPOSE4_PS(m.rows[0], m.rows[1], m.rows[2], m.rows[3]);
-    return m;
 }
 
 static inline mat4 minverse(mat4 m)

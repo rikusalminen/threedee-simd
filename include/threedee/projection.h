@@ -138,7 +138,7 @@ static inline mat4 mat_perspective_fovy_scalar(scalar fovy, scalar aspect, scala
     return mat_frustum_scalar(-xmax, xmax, -ymax, ymax, near, far);
 }
 
-static inline mat4 mat_perspective_fovx(scalar fovx, scalar aspect, scalar near, scalar far);
+// static inline mat4 mat_perspective_fovx(scalar fovx, scalar aspect, scalar near, scalar far);
 
 static inline mat4 mat_perspective_fovy_inf_z(scalar fovy, scalar aspect, scalar near)
 {
@@ -147,6 +147,6 @@ static inline mat4 mat_perspective_fovy_inf_z(scalar fovy, scalar aspect, scalar
     return mat_frustum_inf_zv(vec(-xmax, -ymax, near, 0.0), vec(xmax, ymax, 0.0, 0.0));
 }
 
-static inline mat4 mat_perspective_fovx_inf_z(scalar fovx, scalar aspect, scalar near, scalar far);
+// static inline mat4 mat_perspective_fovx_inf_z(scalar fovx, scalar aspect, scalar near, scalar far);
 
 #endif

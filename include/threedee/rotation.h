@@ -55,7 +55,7 @@ static inline mat4 mat_euler(vec4 angles)
     return mat3_to_mat4(mat_euler3(angles));
 }
 
-static inline mat4 mat_axisangle(vec4 axisangle);
+// static inline mat4 mat_axisangle(vec4 axisangle);
 
 static inline mat4 quat_to_mat_mmul(vec4 quat)
 {
@@ -206,9 +206,9 @@ vec4 quat_euler(vec4 angles)
     return result;
 }
 
-static inline vec4 quat_axisangle(vec4 axisangle);
-static inline vec4 quat_to_axisangle(vec4 quat);
-static inline vec4 mat_to_quat(mat4 mat);
+// static inline vec4 quat_axisangle(vec4 axisangle);
+// static inline vec4 quat_to_axisangle(vec4 quat);
+// static inline vec4 mat_to_quat(mat4 mat);
 
 static inline vec4 qprod_scalar(vec4 x, vec4 y)
 {
