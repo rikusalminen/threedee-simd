@@ -122,8 +122,8 @@ static inline vec4 mvmul(mat4 m, vec4 v)
     return mvmul_rows(m.rows[0], m.rows[1], m.rows[2], m.rows[3], v);
 }
 
-static inline mat4 mmmul(mat4 l, mat4 r) __attribute__((always_inline));
-static inline mat4 mmmul(mat4 l, mat4 r)
+static inline mat4 mmmul_dot(mat4 l, mat4 r) __attribute__((always_inline));
+static inline mat4 mmmul_dot(mat4 l, mat4 r)
 {
     _MM_TRANSPOSE4_PS(r.rows[0], r.rows[1], r.rows[2], r.rows[3]);
 
@@ -148,29 +148,29 @@ static inline mat4 mmmul(mat4 l, mat4 r)
     return result;
 }
 
-static inline mat4 mmmul_freevec(mat4 l, mat4 r) __attribute__((always_inline));
-static inline mat4 mmmul_freevec(mat4 l, mat4 r)
+static inline mat4 mmmul_mad(mat4 l, mat4 r) __attribute__((always_inline));
+static inline mat4 mmmul_mad(mat4 l, mat4 r)
 {
     vec4 row0 =
-        vmadd(vsplat(l.rows[0], 3), r.rows[0],
-        vmadd(vsplat(l.rows[0], 2), r.rows[0],
-        vmadd(vsplat(l.rows[0], 1), r.rows[0],
+        vmadd(vsplat(l.rows[0], 3), r.rows[3],
+        vmadd(vsplat(l.rows[0], 2), r.rows[2],
+        vmadd(vsplat(l.rows[0], 1), r.rows[1],
         (vsplat(l.rows[0], 0) * r.rows[0]))));
     vec4 row1 =
-        vmadd(vsplat(l.rows[1], 3), r.rows[1],
-        vmadd(vsplat(l.rows[1], 2), r.rows[1],
+        vmadd(vsplat(l.rows[1], 3), r.rows[3],
+        vmadd(vsplat(l.rows[1], 2), r.rows[2],
         vmadd(vsplat(l.rows[1], 1), r.rows[1],
-        (vsplat(l.rows[1], 0) * r.rows[1]))));
+        (vsplat(l.rows[1], 0) * r.rows[0]))));
     vec4 row2 =
-        vmadd(vsplat(l.rows[2], 3), r.rows[2],
+        vmadd(vsplat(l.rows[2], 3), r.rows[3],
         vmadd(vsplat(l.rows[2], 2), r.rows[2],
-        vmadd(vsplat(l.rows[2], 1), r.rows[2],
-        (vsplat(l.rows[2], 0) * r.rows[2]))));
+        vmadd(vsplat(l.rows[2], 1), r.rows[1],
+        (vsplat(l.rows[2], 0) * r.rows[0]))));
     vec4 row3 =
         vmadd(vsplat(l.rows[3], 3), r.rows[3],
-        vmadd(vsplat(l.rows[3], 2), r.rows[3],
-        vmadd(vsplat(l.rows[3], 1), r.rows[3],
-        (vsplat(l.rows[3], 0) * r.rows[3]))));
+        vmadd(vsplat(l.rows[3], 2), r.rows[2],
+        vmadd(vsplat(l.rows[3], 1), r.rows[1],
+        (vsplat(l.rows[3], 0) * r.rows[0]))));
 
     mat4 result = { { row0, row1, row2, row3 } };
     return result;
@@ -180,29 +180,31 @@ static inline mat4 mmmul_add(mat4 l, mat4 r) __attribute__((always_inline));
 static inline mat4 mmmul_add(mat4 l, mat4 r)
 {
     vec4 row0 =
-        vsplat(l.rows[0], 3) * r.rows[0] +
-        vsplat(l.rows[0], 2) * r.rows[0] +
-        vsplat(l.rows[0], 1) * r.rows[0] +
+        vsplat(l.rows[0], 3) * r.rows[3] +
+        vsplat(l.rows[0], 2) * r.rows[2] +
+        vsplat(l.rows[0], 1) * r.rows[1] +
         vsplat(l.rows[0], 0) * r.rows[0];
     vec4 row1 =
-        vsplat(l.rows[1], 3) * r.rows[1] +
-        vsplat(l.rows[1], 2) * r.rows[1] +
+        vsplat(l.rows[1], 3) * r.rows[3] +
+        vsplat(l.rows[1], 2) * r.rows[2] +
         vsplat(l.rows[1], 1) * r.rows[1] +
-        vsplat(l.rows[1], 0) * r.rows[1];
+        vsplat(l.rows[1], 0) * r.rows[0];
     vec4 row2 =
-        vsplat(l.rows[2], 3) * r.rows[2] +
+        vsplat(l.rows[2], 3) * r.rows[3] +
         vsplat(l.rows[2], 2) * r.rows[2] +
-        vsplat(l.rows[2], 1) * r.rows[2] +
-        vsplat(l.rows[2], 0) * r.rows[2];
+        vsplat(l.rows[2], 1) * r.rows[1] +
+        vsplat(l.rows[2], 0) * r.rows[0];
     vec4 row3 =
         vsplat(l.rows[3], 3) * r.rows[3] +
-        vsplat(l.rows[3], 2) * r.rows[3] +
-        vsplat(l.rows[3], 1) * r.rows[3] +
-        vsplat(l.rows[3], 0) * r.rows[3];
+        vsplat(l.rows[3], 2) * r.rows[2] +
+        vsplat(l.rows[3], 1) * r.rows[1] +
+        vsplat(l.rows[3], 0) * r.rows[0];
 
     mat4 result = { { row0, row1, row2, row3 } };
     return result;
 }
+
+static inline mat4 mmmul(mat4 a, mat4 b) { return mmmul_add(a, b); }
 
 static inline mat4 minverse_transpose_rows(vec4 row0, vec4 row1, vec4 row2, vec4 row3) __attribute__((always_inline));
 static inline mat4 minverse_transpose_rows(vec4 row0, vec4 row1, vec4 row2, vec4 row3)
