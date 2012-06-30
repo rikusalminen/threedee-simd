@@ -4,7 +4,8 @@
 #include <threedee/vector.h>
 #include <threedee/matrix.h>
 
-mat4 mtranslate_zero(vec4 delta)
+static inline mat4 mtranslate_zero(vec4 delta) __attribute__((always_inline));
+static inline mat4 mtranslate_zero(vec4 delta)
 {
     vec4 one = _mm_set_ss(1.0);
     vec4 row0 = vshuffle(one, delta, 0, 1, 3, 0);
@@ -16,12 +17,14 @@ mat4 mtranslate_zero(vec4 delta)
     return m;
 }
 
-mat4 mtranslate(vec4 delta)
+static inline mat4 mtranslate(vec4 delta) __attribute__((always_inline));
+static inline mat4 mtranslate(vec4 delta)
 {
     return mtranslate_zero(vxyz(delta));
 }
 
-mat4 mscale_zero(vec4 factor)
+static inline mat4 mscale_zero(vec4 factor) __attribute__((always_inline));
+static inline mat4 mscale_zero(vec4 factor)
 {
     vec4 one = _mm_set_ss(1.0);
     vec4 row0 = vshuffle(factor, vzero(), 0, 3, 0, 0);
@@ -32,7 +35,8 @@ mat4 mscale_zero(vec4 factor)
     return m;
 }
 
-mat4 mscale(vec4 factor)
+static inline mat4 mscale(vec4 factor) __attribute__((always_inline));
+static inline mat4 mscale(vec4 factor)
 {
     return mscale_zero(vxyz(factor));
 }

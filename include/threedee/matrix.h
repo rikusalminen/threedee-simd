@@ -4,24 +4,28 @@
 #include <threedee/types.h>
 #include <threedee/vector.h>
 
+static inline mat4 mtranspose(mat4 m) __attribute__((always_inline));
 static inline mat4 mtranspose(mat4 m)
 {
     _MM_TRANSPOSE4_PS(m.rows[0], m.rows[1], m.rows[2], m.rows[3]);
     return m;
 }
 
+static inline mat4 mload(const mat4 *ptr) __attribute__((always_inline));
 static inline mat4 mload(const mat4 *ptr)
 {
     mat4 m = {{ vload((vec4*)ptr+0), vload((vec4*)ptr+1), vload((vec4*)ptr+2), vload((vec4*)ptr+3) }};
     return m;
 }
 
+static inline mat4 mloadu(const float *ptr) __attribute__((always_inline));
 static inline mat4 mloadu(const float *ptr)
 {
     mat4 m = {{ vloadu((float*)ptr+0), vloadu((float*)ptr+4), vloadu((float*)ptr+8), vloadu((float*)ptr+12) }};
     return m;
 }
 
+static inline void mstore(mat4 *ptr, mat4 mat) __attribute__((always_inline));
 static inline void mstore(mat4 *ptr, mat4 mat)
 {
     vstore((vec4*)ptr + 0, mat.rows[0]);
@@ -30,6 +34,7 @@ static inline void mstore(mat4 *ptr, mat4 mat)
     vstore((vec4*)ptr + 3, mat.rows[3]);
 }
 
+static inline void mstoreu(float *ptr, mat4 mat) __attribute__((always_inline));
 static inline void mstoreu(float *ptr, mat4 mat)
 {
     vstoreu(ptr + 0, mat.rows[0]);
@@ -38,6 +43,7 @@ static inline void mstoreu(float *ptr, mat4 mat)
     vstoreu(ptr + 12, mat.rows[3]);
 }
 
+static inline void mstream(mat4 *ptr, mat4 mat) __attribute__((always_inline));
 static inline void mstream(mat4 *ptr, mat4 mat)
 {
     vstream((vec4*)ptr + 0, mat.rows[0]);
@@ -46,21 +52,29 @@ static inline void mstream(mat4 *ptr, mat4 mat)
     vstream((vec4*)ptr + 3, mat.rows[3]);
 }
 
+static inline mat4 mloadt(const mat4 *ptr) __attribute__((always_inline));
 static inline mat4 mloadt(const mat4 *ptr) { return mtranspose(mload(ptr)); }
+static inline mat4 mloadut(const float *ptr) __attribute__((always_inline));
 static inline mat4 mloadut(const float *ptr) { return mtranspose(mloadu(ptr)); }
+static inline void mstoret(mat4 *ptr, mat4 mat) __attribute__((always_inline));
 static inline void mstoret(mat4 *ptr, mat4 mat) { mstore(ptr, mtranspose(mat)); }
+static inline void mstoreut(float *ptr, mat4 mat) __attribute__((always_inline));
 static inline void mstoreut(float *ptr, mat4 mat) { mstoreu(ptr, mtranspose(mat)); }
+static inline void mstreamt(mat4 *ptr, mat4 mat) __attribute__((always_inline));
 static inline void mstreamt(mat4 *ptr, mat4 mat) { mstream(ptr, mtranspose(mat)); }
 
+static inline mat4 smmul(scalar s, mat4 m) __attribute__((always_inline));
 static inline mat4 smmul(scalar s, mat4 m)
 {
     mat4 result = {{ vscalar(s) * m.rows[0], vscalar(s) * m.rows[1], vscalar(s) * m.rows[2], vscalar(s) * m.rows[3] }};
     return result;
 }
 
+static inline mat4 msmul(mat4 m, scalar s) __attribute__((always_inline));
 static inline mat4 msmul(mat4 m, scalar s) { return smmul(s, m); }
 
-mat4 midentity()
+static inline mat4 midentity() __attribute__((always_inline));
+static inline mat4 midentity()
 {
     vec4 one = _mm_set_ss(1.0);
     vec4 row0 = vshuffle(one, one, 0, 1, 1, 1);
@@ -71,12 +85,14 @@ mat4 midentity()
     return identity;
 }
 
+static inline mat4 mzero() __attribute__((always_inline));
 static inline mat4 mzero()
 {
     mat4 zero = {{ vzero(), vzero(), vzero(), vzero() }};
     return zero;
 }
 
+static inline mat4 mat3_to_mat4(mat4 mat) __attribute__((always_inline));
 static inline mat4 mat3_to_mat4(mat4 mat)
 {
     vec4 one = _mm_set_ss(1.0);
@@ -85,6 +101,7 @@ static inline mat4 mat3_to_mat4(mat4 mat)
     return result;
 }
 
+static inline vec4 mvmul_rows(vec4 x, vec4 y, vec4 z, vec4 w, vec4 v) __attribute__((always_inline));
 static inline vec4 mvmul_rows(vec4 x, vec4 y, vec4 z, vec4 w, vec4 v)
 {
     return vshuffle(
@@ -99,11 +116,13 @@ static inline vec4 mvmul_rows(vec4 x, vec4 y, vec4 z, vec4 w, vec4 v)
         0, 2, 0, 2);
 }
 
+static inline vec4 mvmul(mat4 m, vec4 v) __attribute__((always_inline));
 static inline vec4 mvmul(mat4 m, vec4 v)
 {
     return mvmul_rows(m.rows[0], m.rows[1], m.rows[2], m.rows[3], v);
 }
 
+static inline mat4 mmmul(mat4 l, mat4 r) __attribute__((always_inline));
 static inline mat4 mmmul(mat4 l, mat4 r)
 {
     _MM_TRANSPOSE4_PS(r.rows[0], r.rows[1], r.rows[2], r.rows[3]);
@@ -129,6 +148,7 @@ static inline mat4 mmmul(mat4 l, mat4 r)
     return result;
 }
 
+static inline mat4 mmmul_freevec(mat4 l, mat4 r) __attribute__((always_inline));
 static inline mat4 mmmul_freevec(mat4 l, mat4 r)
 {
     vec4 row0 =
@@ -156,6 +176,7 @@ static inline mat4 mmmul_freevec(mat4 l, mat4 r)
     return result;
 }
 
+static inline mat4 mmmul_add(mat4 l, mat4 r) __attribute__((always_inline));
 static inline mat4 mmmul_add(mat4 l, mat4 r)
 {
     vec4 row0 =
@@ -183,6 +204,7 @@ static inline mat4 mmmul_add(mat4 l, mat4 r)
     return result;
 }
 
+static inline mat4 minverse_transpose_rows(vec4 row0, vec4 row1, vec4 row2, vec4 row3) __attribute__((always_inline));
 static inline mat4 minverse_transpose_rows(vec4 row0, vec4 row1, vec4 row2, vec4 row3)
 {
     vec4 minor0, minor1, minor2, minor3;
@@ -259,11 +281,13 @@ static inline mat4 minverse_transpose_rows(vec4 row0, vec4 row1, vec4 row2, vec4
     return result;
 }
 
+static inline mat4 minverse(mat4 m) __attribute__((always_inline));
 static inline mat4 minverse(mat4 m)
 {
     return mtranspose(minverse_transpose_rows(m.rows[0], m.rows[1], m.rows[2], m.rows[3]));
 }
 
+static inline mat4 minverse_scalar(mat4 mat) __attribute__((always_inline));
 static inline mat4 minverse_scalar(mat4 mat)
 {
     mat4 result;

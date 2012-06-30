@@ -5,6 +5,7 @@
 #include <threedee/matrix.h>
 #include <threedee/sincos.h>
 
+static inline mat4 mat_euler_scalar(vec4 angles) __attribute__((always_inline));
 static inline mat4 mat_euler_scalar(vec4 angles)
 {
     vec4 vsn, vcs;
@@ -23,6 +24,7 @@ static inline mat4 mat_euler_scalar(vec4 angles)
 }
 
 
+static inline mat4 mat_euler3(vec4 angles) __attribute__((always_inline));
 static inline mat4 mat_euler3(vec4 angles)
 {
     vec4 sn, cs;
@@ -50,13 +52,16 @@ static inline mat4 mat_euler3(vec4 angles)
     return m;
 }
 
+static inline mat4 mat_euler(vec4 angles) __attribute__((always_inline));
 static inline mat4 mat_euler(vec4 angles)
 {
     return mat3_to_mat4(mat_euler3(angles));
 }
 
+// static inline mat4 mat_axisangle(vec4 axisangle); __attribute__((always_inline));
 // static inline mat4 mat_axisangle(vec4 axisangle);
 
+static inline mat4 quat_to_mat_mmul(vec4 quat) __attribute__((always_inline));
 static inline mat4 quat_to_mat_mmul(vec4 quat)
 {
     float *q = (float*)&quat;
@@ -78,6 +83,7 @@ static inline mat4 quat_to_mat_mmul(vec4 quat)
     return mmmul(m1, m2);
 }
 
+static inline mat4 quat_to_mat_scalar(vec4 quat) __attribute__((always_inline));
 static inline mat4 quat_to_mat_scalar(vec4 quat)
 {
     float *q = (float*)&quat;
@@ -107,6 +113,7 @@ static inline mat4 quat_to_mat_scalar(vec4 quat)
     return mat;
 }
 
+static inline mat4 quat_to_mat3(vec4 quat) __attribute__((always_inline));
 static inline mat4 quat_to_mat3(vec4 quat)
 {
     vec4 xs = vsplat(quat, 0) * quat;
@@ -133,12 +140,14 @@ static inline mat4 quat_to_mat3(vec4 quat)
     return result;
 }
 
+static inline mat4 quat_to_mat(vec4 quat) __attribute__((always_inline));
 static inline mat4 quat_to_mat(vec4 quat)
 {
     return mat3_to_mat4(quat_to_mat3(quat));
 }
 
 #include <math.h>
+static inline vec4 quat_euler_gems(vec4 angles) __attribute__((always_inline));
 static inline vec4 quat_euler_gems(vec4 angles)
 {
     const float *ptr = (const float *)&angles;
@@ -160,6 +169,7 @@ static inline vec4 quat_euler_gems(vec4 angles)
     return vec(X, Y, Z, W);
 }
 
+static inline vec4 quat_euler_scalar(vec4 angles) __attribute__((always_inline));
 static inline vec4 quat_euler_scalar(vec4 angles)
 {
     vec4 vsn, vcs;
@@ -177,7 +187,8 @@ static inline vec4 quat_euler_scalar(vec4 angles)
     return result;
 }
 
-vec4 quat_euler(vec4 angles)
+static inline vec4 quat_euler(vec4 angles) __attribute__((always_inline));
+static inline vec4 quat_euler(vec4 angles)
 {
     vec4 sn, cs;
     vsincos(vscalar(0.5) * angles, &sn, &cs);
@@ -206,10 +217,14 @@ vec4 quat_euler(vec4 angles)
     return result;
 }
 
+// static inline vec4 quat_axisangle(vec4 axisangle); __attribute__((always_inline));
 // static inline vec4 quat_axisangle(vec4 axisangle);
+// static inline vec4 quat_to_axisangle(vec4 quat); __attribute__((always_inline));
 // static inline vec4 quat_to_axisangle(vec4 quat);
+// static inline vec4 mat_to_quat(mat4 mat); __attribute__((always_inline));
 // static inline vec4 mat_to_quat(mat4 mat);
 
+static inline vec4 qprod_scalar(vec4 x, vec4 y) __attribute__((always_inline));
 static inline vec4 qprod_scalar(vec4 x, vec4 y)
 {
     float *xs = (float*)&x, *ys = (float*)&y;
@@ -223,17 +238,19 @@ static inline vec4 qprod_scalar(vec4 x, vec4 y)
     return result;
 }
 
+static inline vec4 qprod(vec4 x, vec4 y) __attribute__((always_inline));
 static inline vec4 qprod(vec4 x, vec4 y)
 {
     vec4 negative = _mm_set_ss(-0.0);
     return
-        vshuffle(x, x, 3, 3, 3, 3) * y +
+    vshuffle(x, x, 3, 3, 3, 3) * y +
         _mm_xor_ps(vshuffle(negative, negative, 1, 1, 1, 0),
             vshuffle(x, x, 0, 1, 2, 0) * vshuffle(y, y, 3, 3, 3, 0) +
             vshuffle(x, x, 1, 2, 0, 1) * vshuffle(y, y, 2, 0, 1, 1)) -
         vshuffle(x, x, 2, 0, 1, 2) * vshuffle(y, y, 1, 2, 0, 2);
 }
 
+static inline vec4 qprod_mad(vec4 x, vec4 y) __attribute__((always_inline));
 static inline vec4 qprod_mad(vec4 x, vec4 y)
 {
     vec4 negative = _mm_set_ss(-0.0);
@@ -245,6 +262,7 @@ static inline vec4 qprod_mad(vec4 x, vec4 y)
                 vshuffle(x, x, 1, 2, 0, 1) * vshuffle(y, y, 2, 0, 1, 1)))));
 }
 
+static inline vec4 qconj(vec4 x) __attribute__((always_inline));
 static inline vec4 qconj(vec4 x)
 {
     vec4 negative = _mm_set_ss(-0.0);
