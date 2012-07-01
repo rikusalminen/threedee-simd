@@ -5,23 +5,22 @@
 
 void printv(vec4 vec)
 {
-    float x[4];
-    _mm_storeu_ps(x, vec);
+    const float *x = (const float*)&vec;
     printf("%2.3f\t%2.3f\t%2.3f\t%2.3f\n", x[0], x[1], x[2], x[3]);
 }
 
 void printvi(vec4 vec)
 {
-    uint32_t x[4];
-    _mm_storeu_ps((float*)x, vec);
+    const uint32_t *x = (const uint32_t*)&vec;
     printf("%8x\t%8x\t%8x\t%8x\n", x[0], x[1], x[2], x[3]);
 }
 
 void printm(mat4 mat)
 {
+    const float *m = (const float*)&mat;
     printf("\n");
     for(int i = 0; i < 4; ++i)
-        printv(mat.rows[i]);
+        printf("%2.3f\t%2.3f\t%2.3f\t%2.3f\n", m[i + 0], m[i + 4], m[i + 8], m[i + 12]);
     printf("\n");
 }
 
@@ -63,7 +62,7 @@ int main(int argc, char *argv[])
     vec4 a = { 1, 2, 3, 4 }, b = { 5, 6, 7, 8 };
 
 
-    printf("\ncross products:\n");
+    printf("\ndot products:\n");
 
     printv(vdot(a, b));
     printv(vdot(b, a));

@@ -77,6 +77,9 @@ static inline void vstream(vec4 *ptr, vec4 v) { _mm_stream_ps((float*)ptr, v); }
 static inline vec4 vxyz(vec4 x) __attribute__((always_inline));
 static inline vec4 vxyz(vec4 x) { return vshuffle(x, vshuffle(x, vzero(), 2, 3, 0, 0), 0, 1, 0, 3); }
 
+static inline vec4 vxyz1(vec4 x) __attribute__((always_inline));
+static inline vec4 vxyz1(vec4 x) { return vshuffle(x, vshuffle(x, _mm_set_ss(1.0), 2, 2, 0, 1), 0, 1, 0, 2); }
+
 #ifdef __FMA4__
 
 static inline vec4 vmadd(vec4 a, vec4 b, vec4 c) __attribute__((always_inline));

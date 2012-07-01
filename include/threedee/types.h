@@ -6,7 +6,7 @@ typedef float scalar;
 
 struct mat4_t
 {
-    vec4 rows[4];
+    vec4 cols[4];
 } __attribute__((aligned(16)));
 
 typedef struct mat4_t mat4;

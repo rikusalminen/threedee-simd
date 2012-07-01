@@ -14,9 +14,9 @@ static inline mat4 mat_euler_scalar(vec4 angles)
     float *sn = (float*)&vsn, *cs = (float*)&vcs;
 
     mat4 mat = {{
-        {  cs[1]*cs[2],                     -cs[1]*sn[2],                        sn[1],         0.0 },
-        {  sn[0]*sn[1]*cs[2] + cs[0]*sn[2], -sn[0]*sn[1]*sn[2] + cs[0]*cs[2],   -sn[0]*cs[1],   0.0 },
-        { -cs[0]*sn[1]*cs[2] + sn[0]*sn[2],  cs[0]*sn[1]*sn[2] + sn[0]*cs[2],    cs[0]*cs[1],   0.0 },
+        {  cs[1]*cs[2],                     cs[1]*sn[2],                        -sn[1],         0.0 },
+        {  sn[0]*sn[1]*cs[2] - cs[0]*sn[2], sn[0]*sn[1]*sn[2] + cs[0]*cs[2],   sn[0]*cs[1],   0.0 },
+        {  cs[0]*sn[1]*cs[2] + sn[0]*sn[2],  cs[0]*sn[1]*sn[2] - sn[0]*cs[2],    cs[0]*cs[1],   0.0 },
         { 0.0, 0.0, 0.0, 1.0 }
     }};
 
@@ -30,24 +30,22 @@ static inline mat4 mat_euler3(vec4 angles)
     vec4 sn, cs;
     vsincos(angles, &sn, &cs);
 
-    vec4 negative = _mm_set_ss(-0.0);
-
     vec4 shuf = vshuffle(sn, cs, 0, 2, 0, 2);
 
     vec4 sam = vshuffle(shuf, cs, 0, 2, 1, 1) * vshuffle(shuf, shuf, 1, 3, 2, 3);
 
-    vec4 mix = _mm_xor_ps(vshuffle(negative, negative, 0, 0, 1, 1),
-        vshuffle(sn, sn, 2, 0, 2, 0) * vshuffle(cs, cs, 1, 1, 0, 2));
+    vec4 neg_sn = -sn;
+    vec4 mix = vshuffle(sn, neg_sn, 2, 0, 2, 0) * vshuffle(cs, cs, 1, 1, 0, 2);
 
     vec4 temp1 = vshuffle(sam, mix, 0, 1, 2, 3);
-    vec4 tri = _mm_xor_ps(vshuffle(negative, negative, 1, 0, 0, 1),
-        vsplat(sn, 1) * vshuffle(shuf, shuf, 0, 0, 2, 2) * vshuffle(shuf, shuf, 3, 1, 3, 1))
+    vec4 tri =
+        (vsplat(sn, 1) * vshuffle(shuf, shuf, 0, 0, 2, 2) * vshuffle(shuf, shuf, 3, 1, 3, 1))
         + vshuffle(temp1, temp1, 2, 1, 0, 3);
 
     mat4 m;
-    m.rows[0] = vshuffle(vshuffle(sam, mix, 3, 3, 0, 0), sn, 0, 2, 1, 1);
-    m.rows[1] = vshuffle(tri, mix, 0, 1, 1, 0);
-    m.rows[2] = vshuffle(tri, sam, 2, 3, 2, 0);
+    m.cols[0] = vshuffle(vshuffle(sam, mix, 3, 3, 0, 0), neg_sn, 0, 2, 1, 1);
+    m.cols[1] = vshuffle(tri, mix, 0, 1, 1, 0);
+    m.cols[2] = vshuffle(tri, sam, 2, 3, 2, 0);
 
     return m;
 }
@@ -89,24 +87,9 @@ static inline mat4 quat_to_mat_scalar(vec4 quat)
     float *q = (float*)&quat;
 
     mat4 mat = {{
-        {
-            1.0 - 2.0*(q[1]*q[1] + q[2]*q[2]),
-            2.0*(q[0]*q[1] + q[2]*q[3]),
-            2.0*(q[0]*q[2] - q[1]*q[3]),
-            0.0
-        },
-        {
-            2.0*(q[0]*q[1] - q[2]*q[3]),
-            1.0 - 2.0*(q[0]*q[0] + q[2]*q[2]),
-            2.0*(q[1]*q[2] + q[0]*q[3]),
-            0.0
-        },
-        {
-            2.0*(q[0]*q[2] + q[1]*q[3]),
-            2.0*(q[1]*q[2] - q[0]*q[3]),
-            1.0 - 2.0*(q[0]*q[0] + q[1]*q[1]),
-            0.0
-        },
+        { 1.0 - 2.0*(q[1]*q[1] + q[2]*q[2]), 2.0*(q[0]*q[1] + q[2]*q[3]), 2.0*(q[0]*q[2] - q[1]*q[3]), 0.0 },
+        { 2.0*(q[0]*q[1] - q[2]*q[3]), 1.0 - 2.0*(q[0]*q[0] + q[2]*q[2]), 2.0*(q[1]*q[2] + q[0]*q[3]), 0.0 },
+        { 2.0*(q[0]*q[2] + q[1]*q[3]), 2.0*(q[1]*q[2] - q[0]*q[3]), 1.0 - 2.0*(q[0]*q[0] + q[1]*q[1]), 0.0 },
         { 0.0, 0.0, 0.0, 1.0 }
     }};
 
@@ -125,17 +108,10 @@ static inline mat4 quat_to_mat3(vec4 quat)
     vec4 dif = vscalar(2.0) * (vshuffle(xs, ys, 2, 1, 2, 0) - vshuffle(ws, ws, 1, 2, 0, 0));
     vec4 sqs = vnmadd(vshuffle(sq, sq, 1, 0, 0, 0) + vshuffle(sq, sq, 2, 2, 1, 0), vscalar(2.0), vscalar(1.0));
 
-    vec4 sumdif1 = vshuffle(sum, dif, 0, 1, 0, 1);
-    vec4 sumdif2 = vshuffle(sum, dif, 2, 3, 2, 3);
-
     mat4 result;
-
-    vec4 row00 = vshuffle(sqs, sumdif1, 0, 0, 0, 2);
-    result.rows[0] = vshuffle(row00, row00, 0, 2, 3, 0);
-    vec4 row10 = vshuffle(sqs, sumdif1, 0, 1, 1, 3);
-    result.rows[1] = vshuffle(row10, row10, 3, 1, 2, 0);
-
-    result.rows[2] = vshuffle(sumdif2, sqs, 0, 1, 2, 0);
+    result.cols[0] = vshuffle(vshuffle(sqs, dif, 0, 0, 1, 1), sum, 0, 2, 2, 2);
+    result.cols[1] = vshuffle(vshuffle(sum, sqs, 0, 0, 1, 1), dif, 0, 2, 2, 2);
+    result.cols[2] = vshuffle(vshuffle(dif, sum, 0, 0, 1, 1), sqs, 0, 2, 2, 2);
 
     return result;
 }
