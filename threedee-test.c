@@ -61,6 +61,14 @@ int main(int argc, char *argv[])
 
     vec4 a = { 1, 2, 3, 4 }, b = { 5, 6, 7, 8 };
 
+    printv(a);
+    printv(b);
+
+    printf("\nshuffles:\n");
+    printv(vshuffle(a, a, 0, 1, 2, 3));
+    printv(vshuffle(a, a, 3, 2, 1, 0));
+    printv(vshuffle(a, b, 0, 1, 0, 1));
+    printv(vshuffle(a, b, 2, 3, 2, 3));
 
     printf("\ndot products:\n");
 

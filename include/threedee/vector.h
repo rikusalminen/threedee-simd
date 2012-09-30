@@ -70,8 +70,13 @@ static inline void vstoreu(float *ptr, vec4 v) { _mm_storeu_ps(ptr, v); }
 static inline void vstream(vec4 *ptr, vec4 v) __attribute__((always_inline));
 static inline void vstream(vec4 *ptr, vec4 v) { _mm_stream_ps((float*)ptr, v); }
 
+#ifdef __clang__
+#define vshuffle(x, y, a, b, c, d) (__builtin_shufflevector((x), (y), (a), (b), (4+c), (4+d)))
+#else
 #define vshuffle_mask(a, b, c, d) (((a) << 0) | ((b) << 2) | ((c) << 4) | ((d) << 6))
 #define vshuffle(x, y, a, b, c, d) (__builtin_ia32_shufps((x), (y), vshuffle_mask((a),(b),(c),(d))))
+#endif
+
 #define vsplat(v, x) vshuffle((v), (v), (x), (x),  (x),  (x))
 
 static inline vec4 vxyz(vec4 x) __attribute__((always_inline));
