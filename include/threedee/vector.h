@@ -150,13 +150,13 @@ static inline vec4 vblend_mask(vec4 a, vec4 b, const int mask) { return _mm_blen
 static inline vec4 vdot(vec4 x, vec4 y) __attribute__((always_inline));
 static inline vec4 vdot(vec4 x, vec4 y)
 {
-    return _mm_dp_ps(x, y, 0xf);
+    return _mm_dp_ps(x, y, 0xff);
 }
 
 static inline vec4 vdot3(vec4 x, vec4 y) __attribute__((always_inline));
 static inline vec4 vdot3(vec4 x, vec4 y)
 {
-    return _mm_dp_ps(x, y, 0x7);
+    return _mm_dp_ps(x, y, 0x7f);
 }
 
 #else
