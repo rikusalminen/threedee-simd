@@ -302,6 +302,12 @@ static inline mat4 minverse_transpose_cols(vec4 col0, vec4 col1, vec4 col2, vec4
     return result;
 }
 
+static inline mat4 minverse_transpose(mat4 m) __attribute__((always_inline));
+static inline mat4 minverse_transpose(mat4 m)
+{
+    return minverse_transpose_cols(m.cols[0], m.cols[1], m.cols[2], m.cols[3]);
+}
+
 static inline mat4 minverse(mat4 m) __attribute__((always_inline));
 static inline mat4 minverse(mat4 m)
 {
