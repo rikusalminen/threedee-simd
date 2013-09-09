@@ -355,8 +355,8 @@ static inline mat4 minverse_scalar(mat4 mat)
 
     float det = m[0]*inv[0] + m[1]*inv[4] + m[2]*inv[8] + m[3]*inv[12];
 
-    for(int i = 0; i < 16; i++)
-        inv[i] = inv[i] * (1.0 / det);
+    for(int i = 0; i < 16; ++i)
+        inv[i] = inv[i] * (1.0f / det);
 
     return result;
 }
@@ -366,7 +366,7 @@ static inline mat4 minverse3_scalar(mat4 mat)
     mat4 result;
     float *m = (float*)&mat, *inv = (float*)&result;
 
-    float inv_det = 1.0 / (
+    float inv_det = 1.0f / (
             m[0] * (m[5]*m[10] - m[6]*m[9])
             - m[4] * (m[1]*m[10] - m[2]*m[9])
             + m[8] * (m[1]*m[6] - m[2]*m[5]));
