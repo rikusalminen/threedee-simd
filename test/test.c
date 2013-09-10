@@ -115,19 +115,25 @@ static void test_quat_to_mat() {
             { 0,        0,  0,      1 }
         }};
 
+        vec4 axisangle = vec(0.0f, 1.0f, 0.0f, T_PI4);
+        vec4 qua       = quat_axisangle(axisangle);
+
         {
-            const char *name  = "quaternion to matrix (default)";
-            vec4 axisangle    = vec(0.0f, 1.0f, 0.0f, T_PI4);
-            vec4 qua          = quat_axisangle(axisangle);
+            const char *name  = "quaternion to matrix, rotate 45 deg around y (default)";
             mat4 mat_from_qua = quat_to_mat(qua);
 
             compare_mat_equal(rot_y_45_ref, mat_from_qua, name);
         }
 
         {
-            const char *name  = "quaternion to matrix (scalar)";
-            vec4 axisangle    = vec(0.0f, 1.0f, 0.0f, T_PI4);
-            vec4 qua          = quat_axisangle(axisangle);
+            const char *name  = "quaternion to matrix, rotate 45 deg around y (mmul)";
+            mat4 mat_from_qua = quat_to_mat_mmul(qua);
+
+            compare_mat_equal(rot_y_45_ref, mat_from_qua, name);
+        }
+
+        {
+            const char *name  = "quaternion to matrix, rotate 45 deg around y (scalar)";
             mat4 mat_from_qua = quat_to_mat_scalar(qua);
 
             compare_mat_equal(rot_y_45_ref, mat_from_qua, name);
