@@ -1,5 +1,13 @@
 CC=gcc
 CFLAGS=-std=gnu99 -MMD -W -Wall -Wextra -pedantic
+CFLAGS+=-Wcast-align -Wcast-qual \
+	-Wpointer-arith -Waggregate-return -Wunreachable-code \
+	-Wfloat-equal -Wformat=2 -Wredundant-decls \
+	-Wundef -Wdisabled-optimization -Wshadow \
+	-Wmissing-braces -Wstrict-aliasing=2 -Wstrict-overflow=5 \
+	-Wconversion -Wno-unused-parameter \
+	-Wno-missing-field-initializers -Wno-missing-braces
+CFLAGS+=-Ideps/
 #CFLAGS+=-g -ggdb
 CFLAGS+=-Iinclude/
 CFLAGS+=-O3 -ffast-math
