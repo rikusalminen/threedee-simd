@@ -204,7 +204,7 @@ static inline vec4 vcross_scalar(vec4 x, vec4 y)
     float *xs = (float*)&x, *ys = (float*)&y;
 
     vec4 result = {
-        xs[1]*ys[2] - xs[2]*ys[0],
+        xs[1]*ys[2] - xs[2]*ys[1],
         xs[2]*ys[0] - xs[0]*ys[2],
         xs[0]*ys[1] - xs[1]*ys[0],
         0.0 };
