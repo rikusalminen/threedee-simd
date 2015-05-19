@@ -87,10 +87,10 @@ static inline mat4 quat_to_mat_scalar(vec4 quat)
     float *q = (float*)&quat;
 
     mat4 mat = {{
-        { 1.0 - 2.0*(q[1]*q[1] + q[2]*q[2]), 2.0*(q[0]*q[1] + q[2]*q[3]), 2.0*(q[0]*q[2] - q[1]*q[3]), 0.0 },
-        { 2.0*(q[0]*q[1] - q[2]*q[3]), 1.0 - 2.0*(q[0]*q[0] + q[2]*q[2]), 2.0*(q[1]*q[2] + q[0]*q[3]), 0.0 },
-        { 2.0*(q[0]*q[2] + q[1]*q[3]), 2.0*(q[1]*q[2] - q[0]*q[3]), 1.0 - 2.0*(q[0]*q[0] + q[1]*q[1]), 0.0 },
-        { 0.0, 0.0, 0.0, 1.0 }
+        { 1.0f - 2.0f*(q[1]*q[1] + q[2]*q[2]), 2.0f*(q[0]*q[1] + q[2]*q[3]), 2.0f*(q[0]*q[2] - q[1]*q[3]), 0.0 },
+        { 2.0f*(q[0]*q[1] - q[2]*q[3]), 1.0f - 2.0f*(q[0]*q[0] + q[2]*q[2]), 2.0f*(q[1]*q[2] + q[0]*q[3]), 0.0 },
+        { 2.0f*(q[0]*q[2] + q[1]*q[3]), 2.0f*(q[1]*q[2] - q[0]*q[3]), 1.0f - 2.0f*(q[0]*q[0] + q[1]*q[1]), 0.0 },
+        { 0.0f, 0.0f, 0.0f, 1.0f }
     }};
 
     return mat;
@@ -129,12 +129,12 @@ static inline vec4 quat_euler_gems(vec4 angles)
     const float *ptr = (const float *)&angles;
     const float fPitch = ptr[0], fYaw = ptr[1], fRoll = ptr[2];
 
-    const float fSinPitch = sin(fPitch*0.5F);
-    const float fCosPitch = cos(fPitch*0.5F);
-    const float fSinYaw = sin(fYaw*0.5F);
-    const float fCosYaw = cos(fYaw*0.5F);
-    const float fSinRoll = sin(fRoll*0.5F);
-    const float fCosRoll = cos(fRoll*0.5F);
+    const float fSinPitch = sinf(fPitch*0.5F);
+    const float fCosPitch = cosf(fPitch*0.5F);
+    const float fSinYaw = sinf(fYaw*0.5F);
+    const float fCosYaw = cosf(fYaw*0.5F);
+    const float fSinRoll = sinf(fRoll*0.5F);
+    const float fCosRoll = cosf(fRoll*0.5F);
     const float fCosPitchCosYaw = fCosPitch*fCosYaw;
     const float fSinPitchSinYaw = fSinPitch*fSinYaw;
     float X = fSinRoll * fCosPitchCosYaw     - fCosRoll * fSinPitchSinYaw;
