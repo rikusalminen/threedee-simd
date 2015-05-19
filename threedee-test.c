@@ -126,9 +126,9 @@ int main(int argc, char *argv[])
     printm(quat_to_mat(quat_euler(angles)));
 
     printf("\nperspective matrix:\n");
-    printm(mat_perspective_fovy(M_PI/4.0, 16.0/9.0, 0.1, 100.0));
-    printm(mat_perspective_fovy_inf_z(M_PI/4.0, 16.0/9.0, 0.1));
-    printm(mat_perspective_fovy_scalar(M_PI/4.0, 16.0/9.0, 0.1, 100.0));
+    printm(mat_perspective_fovy((float)M_PI/4.0f, 16.0f/9.0f, 0.1f, 100.0f));
+    printm(mat_perspective_fovy_inf_z((float)M_PI/4.0f, 16.0f/9.0f, 0.1f));
+    printm(mat_perspective_fovy_scalar((float)M_PI/4.0f, 16.0f/9.0f, 0.1f, 100.0f));
 
     printf("\northogonal matrix:\n");
     printm(mat_ortho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0));

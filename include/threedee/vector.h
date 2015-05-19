@@ -144,8 +144,6 @@ static inline vec4 vnmsub(vec4 a, vec4 b, vec4 c)
 
 static inline vec4 vblend(vec4 a, vec4 b, vec4 mask) __attribute__((always_inline));
 static inline vec4 vblend(vec4 a, vec4 b, vec4 mask) { return _mm_blendv_ps(a, b, mask); }
-static inline vec4 vblend_mask(vec4 a, vec4 b, const int mask) __attribute__((always_inline));
-static inline vec4 vblend_mask(vec4 a, vec4 b, const int mask) { return _mm_blend_ps(a, b, mask); }
 
 static inline vec4 vdot(vec4 x, vec4 y) __attribute__((always_inline));
 static inline vec4 vdot(vec4 x, vec4 y)

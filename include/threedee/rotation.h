@@ -87,10 +87,10 @@ static inline mat4 quat_to_mat_scalar(vec4 quat)
     float *q = (float*)&quat;
 
     mat4 mat = {{
-        { 1.0 - 2.0*(q[1]*q[1] + q[2]*q[2]), 2.0*(q[0]*q[1] + q[2]*q[3]), 2.0*(q[0]*q[2] - q[1]*q[3]), 0.0 },
-        { 2.0*(q[0]*q[1] - q[2]*q[3]), 1.0 - 2.0*(q[0]*q[0] + q[2]*q[2]), 2.0*(q[1]*q[2] + q[0]*q[3]), 0.0 },
-        { 2.0*(q[0]*q[2] + q[1]*q[3]), 2.0*(q[1]*q[2] - q[0]*q[3]), 1.0 - 2.0*(q[0]*q[0] + q[1]*q[1]), 0.0 },
-        { 0.0, 0.0, 0.0, 1.0 }
+        { 1.0f - 2.0f*(q[1]*q[1] + q[2]*q[2]), 2.0f*(q[0]*q[1] + q[2]*q[3]), 2.0f*(q[0]*q[2] - q[1]*q[3]), 0.0 },
+        { 2.0f*(q[0]*q[1] - q[2]*q[3]), 1.0f - 2.0f*(q[0]*q[0] + q[2]*q[2]), 2.0f*(q[1]*q[2] + q[0]*q[3]), 0.0 },
+        { 2.0f*(q[0]*q[2] + q[1]*q[3]), 2.0f*(q[1]*q[2] - q[0]*q[3]), 1.0f - 2.0f*(q[0]*q[0] + q[1]*q[1]), 0.0 },
+        { 0.0f, 0.0f, 0.0f, 1.0f }
     }};
 
     return mat;
@@ -109,9 +109,10 @@ static inline mat4 quat_to_mat3(vec4 quat)
     vec4 sqs = vnmadd(vshuffle(sq, sq, 1, 0, 0, 0) + vshuffle(sq, sq, 2, 2, 1, 0), vscalar(2.0), vscalar(1.0));
 
     mat4 result;
-    result.cols[0] = vshuffle(vshuffle(sqs, dif, 0, 0, 1, 1), sum, 0, 2, 2, 2);
-    result.cols[1] = vshuffle(vshuffle(sum, sqs, 0, 0, 1, 1), dif, 0, 2, 2, 2);
-    result.cols[2] = vshuffle(vshuffle(dif, sum, 0, 0, 1, 1), sqs, 0, 2, 2, 2);
+
+    result.cols[0] = vshuffle(vshuffle(sqs, sum, 0, 0, 0, 0), dif, 0, 2, 0, 0);
+    result.cols[1] = vshuffle(vshuffle(dif, sqs, 1, 1, 1, 1), sum, 0, 2, 1, 1);
+    result.cols[2] = vshuffle(vshuffle(sum, dif, 2, 2, 2, 2), sqs, 0, 2, 2, 2);
 
     return result;
 }
@@ -129,12 +130,12 @@ static inline vec4 quat_euler_gems(vec4 angles)
     const float *ptr = (const float *)&angles;
     const float fPitch = ptr[0], fYaw = ptr[1], fRoll = ptr[2];
 
-    const float fSinPitch = sin(fPitch*0.5F);
-    const float fCosPitch = cos(fPitch*0.5F);
-    const float fSinYaw = sin(fYaw*0.5F);
-    const float fCosYaw = cos(fYaw*0.5F);
-    const float fSinRoll = sin(fRoll*0.5F);
-    const float fCosRoll = cos(fRoll*0.5F);
+    const float fSinPitch = sinf(fPitch*0.5F);
+    const float fCosPitch = cosf(fPitch*0.5F);
+    const float fSinYaw = sinf(fYaw*0.5F);
+    const float fCosYaw = cosf(fYaw*0.5F);
+    const float fSinRoll = sinf(fRoll*0.5F);
+    const float fCosRoll = cosf(fRoll*0.5F);
     const float fCosPitchCosYaw = fCosPitch*fCosYaw;
     const float fSinPitchSinYaw = fSinPitch*fSinYaw;
     float X = fSinRoll * fCosPitchCosYaw     - fCosRoll * fSinPitchSinYaw;
@@ -193,8 +194,23 @@ static inline vec4 quat_euler(vec4 angles)
     return result;
 }
 
-// static inline vec4 quat_axisangle(vec4 axisangle); __attribute__((always_inline));
-// static inline vec4 quat_axisangle(vec4 axisangle);
+/**
+ * convert an axis-angle vector to a quaternion
+ * angle in radians
+ *
+ * [axis.x, axis.y, axis.z, angle] => quaternion
+ */
+static inline vec4 quat_axisangle(vec4 axisangle) __attribute__((always_inline));
+static inline vec4 quat_axisangle(vec4 axisangle) {
+    const float halfAngle = axisangle[3] * 0.5f;
+
+    /* overwrite the last entry */
+    vec4 result = axisangle * vscalar(sinf(halfAngle));
+    result[3] = cosf(halfAngle);
+
+    return result;
+}
+
 // static inline vec4 quat_to_axisangle(vec4 quat); __attribute__((always_inline));
 // static inline vec4 quat_to_axisangle(vec4 quat);
 // static inline vec4 mat_to_quat(mat4 mat); __attribute__((always_inline));
