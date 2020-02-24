@@ -1,1 +1,8 @@
 *.c linguist-language=C
+*.h linguist-language=C
+*.C linguist-language=C
+*.H linguist-language=C
+*.hxx linguist-language=C++
+*.HXX linguist-language=C++
+*.cxx linguist-language=C++
+*.CXX linguist-language=C++
