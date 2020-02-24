@@ -16,7 +16,7 @@ static inline vec4 vsincos(vec4 x, vec4 * restrict s, vec4 * restrict c)
 
 #else
 
-#include "/home/riku/oss/sse_mathfun.h"
+#include <mipp/math/sse_mathfun.h>
 
 static inline void vsincos(vec4 x, vec4 * restrict s, vec4 * restrict c)
 {
