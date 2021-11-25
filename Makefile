@@ -1,11 +1,11 @@
 CC=gcc
-CFLAGS=-std=gnu99 -MMD -W -Wall -Wextra -pedantic
+CFLAGS+=-std=gnu2x -MMD -W -Wall -Wextra -Wno-psabi -pedantic
 #CFLAGS+=-g -ggdb
 CFLAGS+=-Iinclude/
 CFLAGS+=-O3 -ffast-math
 CFLAGS+=-march=native
 ifeq ($(CC),gcc)
-	CFLAGS+=-mfpmath=sse
+	CFLAGS+=-mfpmath=sse+387
 endif
 #CFLAGS+=-msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2 -msse4a -msse2avx -mavx -mfma4
 LDFLAGS=

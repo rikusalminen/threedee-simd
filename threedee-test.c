@@ -5,7 +5,13 @@
 
 void printv(vec4 vec)
 {
-    const float *x = (const float*)&vec;
+    const scalar *x = (const scalar*)&vec;
+    printf("%2.3f\t%2.3f\t%2.3f\t%2.3f\n", x[0], x[1], x[2], x[3]);
+}
+
+void printvd(vec4d vec)
+{
+    const double *x = (const double*)&vec;
     printf("%2.3f\t%2.3f\t%2.3f\t%2.3f\n", x[0], x[1], x[2], x[3]);
 }
 
@@ -17,7 +23,7 @@ void printvi(vec4 vec)
 
 void printm(mat4 mat)
 {
-    const float *m = (const float*)&mat;
+    const scalar *m = (const scalar*)&mat;
     printf("\n");
     for(int i = 0; i < 4; ++i)
         printf("%2.3f\t%2.3f\t%2.3f\t%2.3f\n", m[i + 0], m[i + 4], m[i + 8], m[i + 12]);
@@ -59,10 +65,13 @@ int main(int argc, char *argv[])
     printm(mzero());
     printm(midentity());
 
-    vec4 a = { 1, 2, 3, 4 }, b = { 5, 6, 7, 8 };
+    vec4 a = { 1.0f, 2.0f, 3.0f, 4.0f }, b = { 5.0f, 6.0f, 7.0f, 8.0f };
+    vec4d ad = { 1.0, 2.0, 3.0, 4.0 }, bd = { 5.0, 6.0, 7.0, 8.0 };
 
     printv(a);
     printv(b);
+    printvd(ad);
+    printvd(bd);
 
     printf("\nshuffles:\n");
     printv(vshuffle(a, a, 0, 1, 2, 3));
@@ -74,9 +83,16 @@ int main(int argc, char *argv[])
 
     printv(vdot(a, b));
     printv(vdot(b, a));
-
     printv(vdot3(a, b));
     printv(vdot3(b, a));
+
+    printf("\ndouble precision dot products:\n");
+
+    printvd(vdotd(ad, bd));
+    printvd(vdotd(bd, ad));
+    printvd(vdot3d(ad, bd));
+    printvd(vdot3d(bd, ad));
+
 
     //vec4 blendmask = { 1, -1, 1, -1 };
     //printv(vblend(x, y, blendmask));

@@ -54,7 +54,7 @@ static inline mat4 mat_frustum_scalar(scalar left, scalar right, scalar bottom, 
 {
     mat4 result;
 
-    float *matrix = (float*)&result;
+    scalar *matrix = (scalar*)&result;
     matrix[0] = 2.0 * near / (right - left);
     matrix[1] = 0.0;
     matrix[2] = (right + left) / (right - left);
@@ -113,16 +113,16 @@ static inline mat4 mat_frustum_inf_z(scalar left, scalar right, scalar bottom, s
 static inline mat4 mat_perspective_fovy(scalar fovy, scalar aspect, scalar near, scalar far) __attribute__((always_inline));
 static inline mat4 mat_perspective_fovy(scalar fovy, scalar aspect, scalar near, scalar far)
 {
-    float ymax = near * tanf(fovy / 2.0);
-    float xmax = ymax * aspect;
+    scalar ymax = near * tanf(fovy / 2.0);
+    scalar xmax = ymax * aspect;
     return mat_frustumv(vec(-xmax, -ymax, near, 0.0), vec(xmax, ymax, far, 0.0));
 }
 
 static inline mat4 mat_perspective_fovy_scalar(scalar fovy, scalar aspect, scalar near, scalar far) __attribute__((always_inline));
 static inline mat4 mat_perspective_fovy_scalar(scalar fovy, scalar aspect, scalar near, scalar far)
 {
-    float ymax = near * tanf(fovy / 2.0);
-    float xmax = ymax * aspect;
+    scalar ymax = near * tanf(fovy / 2.0);
+    scalar xmax = ymax * aspect;
     return mat_frustum_scalar(-xmax, xmax, -ymax, ymax, near, far);
 }
 
@@ -131,8 +131,8 @@ static inline mat4 mat_perspective_fovy_scalar(scalar fovy, scalar aspect, scala
 static inline mat4 mat_perspective_fovy_inf_z(scalar fovy, scalar aspect, scalar near) __attribute__((always_inline));
 static inline mat4 mat_perspective_fovy_inf_z(scalar fovy, scalar aspect, scalar near)
 {
-    float ymax = near * tanf(fovy / 2.0);
-    float xmax = ymax * aspect;
+    scalar ymax = near * tanf(fovy / 2.0);
+    scalar xmax = ymax * aspect;
     return mat_frustum_inf_zv(vec(-xmax, -ymax, near, 0.0), vec(xmax, ymax, 0.0, 0.0));
 }
 

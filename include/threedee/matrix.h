@@ -4,6 +4,33 @@
 #include <threedee/types.h>
 #include <threedee/vector.h>
 
+/* Transpose the 4x4 matrix composed of row[0-3].  */
+#define _MM_TRANSPOSE4_PD(row0, row1, row2, row3)			\
+do {									\
+  __v4sd __r0 = (row0), __r1 = (row1), __r2 = (row2), __r3 = (row3);	\
+  __v4sd __t0 = __builtin_ia32_unpcklpd (__r0, __r1);			\
+  __v4sd __t1 = __builtin_ia32_unpcklpd (__r2, __r3);			\
+  __v4sd __t2 = __builtin_ia32_unpckhpd (__r0, __r1);			\
+  __v4sd __t3 = __builtin_ia32_unpckhpd (__r2, __r3);			\
+  (row0) = __builtin_ia32_movlhpd (__t0, __t1);				\
+  (row1) = __builtin_ia32_movhlpd (__t1, __t0);				\
+  (row2) = __builtin_ia32_movlhpd (__t2, __t3);				\
+  (row3) = __builtin_ia32_movhlpd (__t3, __t2);				\
+} while (0)
+
+#define _MM_TRANSPOSE4_PI(row0, row1, row2, row3)			\
+do {									\
+  __v4si __r0 = (row0), __r1 = (row1), __r2 = (row2), __r3 = (row3);	\
+  __v4si __t0 = __builtin_ia32_unpcklpi (__r0, __r1);			\
+  __v4si __t1 = __builtin_ia32_unpcklpi (__r2, __r3);			\
+  __v4si __t2 = __builtin_ia32_unpckhpi (__r0, __r1);			\
+  __v4si __t3 = __builtin_ia32_unpckhpi (__r2, __r3);			\
+  (row0) = __builtin_ia32_movlhpi (__t0, __t1);				\
+  (row1) = __builtin_ia32_movhlpi (__t1, __t0);				\
+  (row2) = __builtin_ia32_movlhpi (__t2, __t3);				\
+  (row3) = __builtin_ia32_movhlpi (__t3, __t2);				\
+} while (0)
+
 static inline mat4 mtranspose(mat4 m) __attribute__((always_inline));
 static inline mat4 mtranspose(mat4 m)
 {
@@ -18,10 +45,10 @@ static inline mat4 mload(const mat4 *ptr)
     return m;
 }
 
-static inline mat4 mloadu(const float *ptr) __attribute__((always_inline));
-static inline mat4 mloadu(const float *ptr)
+static inline mat4 mloadu(const scalar *ptr) __attribute__((always_inline));
+static inline mat4 mloadu(const scalar *ptr)
 {
-    mat4 m = {{ vloadu((float*)ptr+0), vloadu((float*)ptr+4), vloadu((float*)ptr+8), vloadu((float*)ptr+12) }};
+    mat4 m = {{ vloadu((scalar*)ptr+0), vloadu((scalar*)ptr+4), vloadu((scalar*)ptr+8), vloadu((scalar*)ptr+12) }};
     return m;
 }
 
@@ -34,8 +61,8 @@ static inline void mstore(mat4 *ptr, mat4 mat)
     vstore((vec4*)ptr + 3, mat.cols[3]);
 }
 
-static inline void mstoreu(float *ptr, mat4 mat) __attribute__((always_inline));
-static inline void mstoreu(float *ptr, mat4 mat)
+static inline void mstoreu(scalar *ptr, mat4 mat) __attribute__((always_inline));
+static inline void mstoreu(scalar *ptr, mat4 mat)
 {
     vstoreu(ptr + 0, mat.cols[0]);
     vstoreu(ptr + 4, mat.cols[1]);
@@ -54,12 +81,12 @@ static inline void mstream(mat4 *ptr, mat4 mat)
 
 static inline mat4 mloadt(const mat4 *ptr) __attribute__((always_inline));
 static inline mat4 mloadt(const mat4 *ptr) { return mtranspose(mload(ptr)); }
-static inline mat4 mloadut(const float *ptr) __attribute__((always_inline));
-static inline mat4 mloadut(const float *ptr) { return mtranspose(mloadu(ptr)); }
+static inline mat4 mloadut(const scalar *ptr) __attribute__((always_inline));
+static inline mat4 mloadut(const scalar *ptr) { return mtranspose(mloadu(ptr)); }
 static inline void mstoret(mat4 *ptr, mat4 mat) __attribute__((always_inline));
 static inline void mstoret(mat4 *ptr, mat4 mat) { mstore(ptr, mtranspose(mat)); }
-static inline void mstoreut(float *ptr, mat4 mat) __attribute__((always_inline));
-static inline void mstoreut(float *ptr, mat4 mat) { mstoreu(ptr, mtranspose(mat)); }
+static inline void mstoreut(scalar *ptr, mat4 mat) __attribute__((always_inline));
+static inline void mstoreut(scalar *ptr, mat4 mat) { mstoreu(ptr, mtranspose(mat)); }
 static inline void mstreamt(mat4 *ptr, mat4 mat) __attribute__((always_inline));
 static inline void mstreamt(mat4 *ptr, mat4 mat) { mstream(ptr, mtranspose(mat)); }
 
@@ -133,14 +160,14 @@ static inline vec4 mvmul_dot_rows(vec4 x, vec4 y, vec4 z, vec4 w, vec4 v)
 static inline vec4 mvmul(mat4 m, vec4 v) __attribute__((always_inline));
 static inline vec4 mvmul(mat4 m, vec4 v)
 {
-    _MM_TRANSPOSE4_PS(m.cols[0], m.cols[1], m.cols[2], m.cols[3]);
+    mtranspose(m);
     return mvmul_dot_rows(m.cols[0], m.cols[1], m.cols[2], m.cols[3], v);
 }
 
 static inline mat4 mmmul_dot(mat4 l, mat4 r) __attribute__((always_inline));
 static inline mat4 mmmul_dot(mat4 l, mat4 r)
 {
-    _MM_TRANSPOSE4_PS(l.cols[0], l.cols[1], l.cols[2], l.cols[3]);
+    mtranspose(l);
 
     vec4 row0 = vshuffle(
         vshuffle(vdot(l.cols[0], r.cols[0]), vdot(l.cols[0], r.cols[1]), 0, 0, 0, 0),
@@ -318,7 +345,7 @@ static inline mat4 minverse_scalar(mat4 mat) __attribute__((always_inline));
 static inline mat4 minverse_scalar(mat4 mat)
 {
     mat4 result;
-    float *m = (float*)&mat, *inv = (float*)&result;
+    scalar *m = (scalar*)&mat, *inv = (scalar*)&result;
 
     inv[0] =   m[5]*m[10]*m[15] - m[5]*m[11]*m[14] - m[9]*m[6]*m[15]
              + m[9]*m[7]*m[14] + m[13]*m[6]*m[11] - m[13]*m[7]*m[10];
@@ -353,7 +380,7 @@ static inline mat4 minverse_scalar(mat4 mat)
     inv[15] =  m[0]*m[5]*m[10] - m[0]*m[6]*m[9] - m[4]*m[1]*m[10]
              + m[4]*m[2]*m[9] + m[8]*m[1]*m[6] - m[8]*m[2]*m[5];
 
-    float det = m[0]*inv[0] + m[1]*inv[4] + m[2]*inv[8] + m[3]*inv[12];
+    scalar det = m[0]*inv[0] + m[1]*inv[4] + m[2]*inv[8] + m[3]*inv[12];
 
     for(int i = 0; i < 16; i++)
         inv[i] = inv[i] * (1.0 / det);
@@ -364,9 +391,9 @@ static inline mat4 minverse_scalar(mat4 mat)
 static inline mat4 minverse3_scalar(mat4 mat)
 {
     mat4 result;
-    float *m = (float*)&mat, *inv = (float*)&result;
+    scalar *m = (scalar*)&mat, *inv = (scalar*)&result;
 
-    float inv_det = 1.0 / (
+    scalar inv_det = 1.0 / (
             m[0] * (m[5]*m[10] - m[6]*m[9])
             - m[4] * (m[1]*m[10] - m[2]*m[9])
             + m[8] * (m[1]*m[6] - m[2]*m[5]));
