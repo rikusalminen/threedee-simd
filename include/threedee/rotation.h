@@ -11,7 +11,7 @@ static inline mat4 mat_euler_scalar(vec4 angles)
     vec4 vsn, vcs;
     vsincos(angles, &vsn, &vcs);
 
-    float *sn = (float*)&vsn, *cs = (float*)&vcs;
+    scalar *sn = (scalar*)&vsn, *cs = (scalar*)&vcs;
 
     mat4 mat = {{
         {  cs[1]*cs[2],                     cs[1]*sn[2],                        -sn[1],         0.0 },
@@ -62,7 +62,7 @@ static inline mat4 mat_euler(vec4 angles)
 static inline mat4 quat_to_mat_mmul(vec4 quat) __attribute__((always_inline));
 static inline mat4 quat_to_mat_mmul(vec4 quat)
 {
-    float *q = (float*)&quat;
+    scalar *q = (scalar*)&quat;
 
     mat4 m1 = {{
         { q[3],  q[2], -q[1],  q[0] },
@@ -84,7 +84,7 @@ static inline mat4 quat_to_mat_mmul(vec4 quat)
 static inline mat4 quat_to_mat_scalar(vec4 quat) __attribute__((always_inline));
 static inline mat4 quat_to_mat_scalar(vec4 quat)
 {
-    float *q = (float*)&quat;
+    scalar *q = (scalar*)&quat;
 
     mat4 mat = {{
         { 1.0 - 2.0*(q[1]*q[1] + q[2]*q[2]), 2.0*(q[0]*q[1] + q[2]*q[3]), 2.0*(q[0]*q[2] - q[1]*q[3]), 0.0 },
@@ -126,21 +126,21 @@ static inline mat4 quat_to_mat(vec4 quat)
 static inline vec4 quat_euler_gems(vec4 angles) __attribute__((always_inline));
 static inline vec4 quat_euler_gems(vec4 angles)
 {
-    const float *ptr = (const float *)&angles;
-    const float fPitch = ptr[0], fYaw = ptr[1], fRoll = ptr[2];
+    const scalar *ptr = (const scalar *)&angles;
+    const scalar fPitch = ptr[0], fYaw = ptr[1], fRoll = ptr[2];
 
-    const float fSinPitch = sin(fPitch*0.5F);
-    const float fCosPitch = cos(fPitch*0.5F);
-    const float fSinYaw = sin(fYaw*0.5F);
-    const float fCosYaw = cos(fYaw*0.5F);
-    const float fSinRoll = sin(fRoll*0.5F);
-    const float fCosRoll = cos(fRoll*0.5F);
-    const float fCosPitchCosYaw = fCosPitch*fCosYaw;
-    const float fSinPitchSinYaw = fSinPitch*fSinYaw;
-    float X = fSinRoll * fCosPitchCosYaw     - fCosRoll * fSinPitchSinYaw;
-    float Y = fCosRoll * fSinPitch * fCosYaw + fSinRoll * fCosPitch * fSinYaw;
-    float Z = fCosRoll * fCosPitch * fSinYaw - fSinRoll * fSinPitch * fCosYaw;
-    float W = fCosRoll * fCosPitchCosYaw     + fSinRoll * fSinPitchSinYaw;
+    const scalar fSinPitch = sin(fPitch*0.5F);
+    const scalar fCosPitch = cos(fPitch*0.5F);
+    const scalar fSinYaw = sin(fYaw*0.5F);
+    const scalar fCosYaw = cos(fYaw*0.5F);
+    const scalar fSinRoll = sin(fRoll*0.5F);
+    const scalar fCosRoll = cos(fRoll*0.5F);
+    const scalar fCosPitchCosYaw = fCosPitch*fCosYaw;
+    const scalar fSinPitchSinYaw = fSinPitch*fSinYaw;
+    scalar X = fSinRoll * fCosPitchCosYaw     - fCosRoll * fSinPitchSinYaw;
+    scalar Y = fCosRoll * fSinPitch * fCosYaw + fSinRoll * fCosPitch * fSinYaw;
+    scalar Z = fCosRoll * fCosPitch * fSinYaw - fSinRoll * fSinPitch * fCosYaw;
+    scalar W = fCosRoll * fCosPitchCosYaw     + fSinRoll * fSinPitchSinYaw;
 
     return vec(X, Y, Z, W);
 }
@@ -152,7 +152,7 @@ static inline vec4 quat_euler_scalar(vec4 angles)
 
     vsincos(vscalar(0.5) * angles, &vsn, &vcs);
 
-    float *sn = (float*)&vsn, *cs = (float*)&vcs;
+    scalar *sn = (scalar*)&vsn, *cs = (scalar*)&vcs;
 
     vec4 result = {
         sn[2] * cs[0] * cs[1] - cs[2] * sn[0] * sn[1],
@@ -203,7 +203,7 @@ static inline vec4 quat_euler(vec4 angles)
 static inline vec4 qprod_scalar(vec4 x, vec4 y) __attribute__((always_inline));
 static inline vec4 qprod_scalar(vec4 x, vec4 y)
 {
-    float *xs = (float*)&x, *ys = (float*)&y;
+    scalar *xs = (scalar*)&x, *ys = (scalar*)&y;
 
     vec4 result = {
         xs[3]*ys[0] + xs[0]*ys[3] + xs[1]*ys[2] - xs[2]*ys[1],
